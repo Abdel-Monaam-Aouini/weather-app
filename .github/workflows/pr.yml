@@ -1,20 +1,20 @@
 name: PR
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
-
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - master
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
-  id-token: write
+  pull-requests: write
 
 # Allow one concurrent deployment
 concurrency:
@@ -30,19 +30,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: check
+        run : echo "${{ secrets.GITHUB_TOKEN }}"
       - name: Dependabot metadata
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v1.1.1
         with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Approve the PR
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Approve a PR
         run: gh pr review --approve "$PR_URL"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Enable auto-merge for Dependabot PRs
         if: ${{ steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' }}
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
