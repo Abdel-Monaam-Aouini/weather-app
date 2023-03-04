@@ -30,7 +30,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: check
-        run : echo ${{ secrets.GITHUB_TOKEN }}
+        run : echo "${{ secrets.GITHUB_TOKEN }}"
       - name: Dependabot metadata
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v1.1.1
