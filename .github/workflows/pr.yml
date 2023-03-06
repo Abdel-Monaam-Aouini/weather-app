@@ -22,6 +22,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    name: Client
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - name: 👌🏻 Checkout
+        uses: actions/checkout@v3
+      - name: 👌🏻 Setup and build
+        run: |
+         npm ci
+         npm run build &
+      - name: 🔎 Run tests
+        run: npm run test
+
   set-automerge:
     name: Approve and automerge (only dependanbot PRs)
     runs-on: ubuntu-latest
